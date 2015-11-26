@@ -253,13 +253,22 @@ function adversarial.train(dataset, N)
 
   -- save/log current net
   if epoch % opt.saveFreq == 0 then
+    --[[
     local filename = paths.concat(opt.save, 'adversarial.net')
     os.execute('mkdir -p ' .. sys.dirname(filename))
     if paths.filep(filename) then
       os.execute('mv ' .. filename .. ' ' .. filename .. '.old')
     end
+    ]]
+
+    local pad_epoch = string.format("%05d", epoch + 1)
+    local filename = paths.concat(opt.save, pad_epoch .. '.net')
+    os.execute('mkdir -p ' .. sys.dirname(filename))
     print('<trainer> saving network to '..filename)
-    torch.save(filename, {D = model_D, G = model_G, opt = opt})
+
+    -- Saving CPU models
+    print('<trainer> saving network to '..filename)
+    torch.save(filename, {D = model_D:float(), G = model_G:float(), opt = opt})
   end
 
   -- next epoch
